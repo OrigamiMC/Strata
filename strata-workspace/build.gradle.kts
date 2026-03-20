@@ -37,6 +37,40 @@ gradlePlugin {
 }
 
 tasks {
+    publishing {
+        repositories {
+            maven {
+                name = "fancyspacesReleases"
+                url = uri("https://maven.fancyspaces.net/origami/releases")
+
+                credentials(HttpHeaderCredentials::class) {
+                    name = "Authorization"
+                    value = "ApiKey " + providers
+                        .gradleProperty("fancyspacesApiKey")
+                        .orElse(
+                            providers
+                                .environmentVariable("FANCYSPACES_API_KEY")
+                                .orElse("")
+                        )
+                        .get()
+                }
+
+                authentication {
+                    create<HttpHeaderAuthentication>("header")
+                }
+            }
+        }
+
+        publications {
+            create<MavenPublication>("maven") {
+                groupId = project.group.toString()
+                artifactId = project.name
+                version = getStrataWorkspaceVersion()
+                from(project.components["java"])
+            }
+        }
+    }
+
     jar {
         manifest {
             attributes["Main-Class"] = "com.origamimc.strata.cli.Main"
