@@ -1,0 +1,12 @@
+# gralde
+.gradle
+**/build/
+!**/src/**/build/
+!gradle-wrapper.jar
+!gradle-wrapper.properties
+.gradletasknamecache
+
+# other
+.idea
+.project
+.classpath
