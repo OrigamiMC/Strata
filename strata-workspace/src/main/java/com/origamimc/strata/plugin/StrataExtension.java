@@ -10,7 +10,7 @@ public class StrataExtension {
     private final Property<String> cacheDir;
 
     public StrataExtension(ObjectFactory objects) {
-        minecraftVersion = objects.property(String.class).convention("latest");
+        minecraftVersion = objects.property(String.class).convention("latest-release");
         cacheDir = objects.property(String.class);
     }
 

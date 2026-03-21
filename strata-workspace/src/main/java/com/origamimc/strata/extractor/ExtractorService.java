@@ -18,6 +18,10 @@ public class ExtractorService {
     }
 
 
+    /**
+     * Extracts the server bundle for the given version ID. This will create a server jar and a libraries directory in the cache directory.
+     * @return true if the extraction was successful, false otherwise
+     */
     public boolean extractServerBundle(String versionId) {
         Path bundlesPath = strata.getCacheDir().toPath().resolve("server-bundles");
 

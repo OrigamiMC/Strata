@@ -26,7 +26,7 @@ public class MojangService {
     }
 
     public PistonVersionDetails getVersion(String version) {
-        if (version.equalsIgnoreCase("latest") || version.equalsIgnoreCase("latest-release")) {
+        if (version.equalsIgnoreCase("latest-release")) {
             return getLatestRelease();
         } else if (version.equalsIgnoreCase("latest-snapshot")) {
             return getLatestSnapshot();
@@ -90,8 +90,9 @@ public class MojangService {
      * If the file already exists in the cache, it will return the cached file path instead.
      *
      * @param details The version details for which to download the server jar.
+     * @return true if the server jar was successfully downloaded or already exists in the cache, false otherwise.
      */
-    public void downloadServerBundle(PistonVersionDetails details) {
+    public boolean downloadServerBundle(PistonVersionDetails details) {
         String serverJarUrl = details.downloads().server().url();
         String versionId = details.id();
 
@@ -99,7 +100,7 @@ public class MojangService {
         Path serverBundlePath = bundlesPath.resolve("server-bundle-" + versionId + ".jar");
 
         if (Files.exists(serverBundlePath)) {
-            return;
+            return true;
         }
 
         HttpRequest request = HttpRequest.newBuilder()
@@ -116,7 +117,7 @@ public class MojangService {
                     StringProperty.of("url", serverJarUrl),
                     ThrowableProperty.of(e)
             );
-            return;
+            return false;
         }
 
         try {
@@ -129,6 +130,7 @@ public class MojangService {
                     StringProperty.of("path", serverBundlePath.toString()),
                     ThrowableProperty.of(e)
             );
+            return false;
         }
 
         strata.getLogger().info(
@@ -137,6 +139,7 @@ public class MojangService {
                 StringProperty.of("url", serverJarUrl),
                 StringProperty.of("savedPath", serverBundlePath.toString())
         );
+        return true;
     }
 
     private PistonVersionManifestV2 fetchPistonVersionManifest() {

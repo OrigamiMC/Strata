@@ -1,21 +1,21 @@
 package com.origamimc.strata.plugin.tasks;
 
+import com.origamimc.strata.Strata;
+import com.origamimc.strata.mojang.PistonVersionDetails;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.TaskAction;
 
-import java.nio.file.Path;
-
 public class DownloadMinecraftJarTask extends DefaultTask {
 
     @Input
-    private final Property<String> minecraftVersion = getProject().getObjects()
-            .property(String.class)
-            .convention("latest");
+    private final Property<Strata> strataProperty = getProject().getObjects().property(Strata.class);
 
     @Input
-    private final Property<String> cacheDir = getProject().getObjects().property(String.class);
+    private final Property<String> minecraftVersionProperty = getProject().getObjects()
+            .property(String.class)
+            .convention("latest-release");
 
     public DownloadMinecraftJarTask() {
         setGroup("strata internal");
@@ -24,15 +24,31 @@ public class DownloadMinecraftJarTask extends DefaultTask {
 
     @TaskAction
     public void downloadSources() {
-        System.out.println("Downloading Minecraft server jar for version " + minecraftVersion.get());
-        System.out.println("Using cache directory: " + Path.of(cacheDir.get()).toAbsolutePath());
+        Strata strata = strataProperty.get();
+        String mcVersion = minecraftVersionProperty.get();
+
+        // fetch version manifest from Mojang api
+        PistonVersionDetails latest = strata.getMojangService().getVersion(mcVersion);
+        if (latest == null) {
+            return;
+        }
+
+        // download jar from Mojang api
+        if (!strata.getMojangService().downloadServerBundle(latest)) {
+            return;
+        }
+
+        // extract the server jar and libraries from jar
+        if (!strata.getExtractorService().extractServerBundle(latest.id())) {
+            return;
+        }
     }
 
-    public Property<String> getMinecraftVersion() {
-        return minecraftVersion;
+    public Property<Strata> getStrataProperty() {
+        return strataProperty;
     }
 
-    public Property<String> getCacheDir() {
-        return cacheDir;
+    public Property<String> getMinecraftVersionProperty() {
+        return minecraftVersionProperty;
     }
 }

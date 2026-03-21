@@ -1,6 +1,7 @@
 package com.origamimc.strata.plugin;
 
 
+import com.origamimc.strata.Strata;
 import com.origamimc.strata.plugin.tasks.DownloadMinecraftJarTask;
 import com.origamimc.strata.plugin.tasks.SetupTask;
 import org.gradle.api.Plugin;
@@ -12,16 +13,19 @@ public class StrataGradlePlugin implements Plugin<Project> {
     public void apply(Project project) {
         StrataExtension extension = project.getExtensions().create("strata", StrataExtension.class);
 
-        project.getTasks().register("setupStrata", SetupTask.class);
-        project.getTasks().register("downloadMinecraftJar", DownloadMinecraftJarTask.class, task -> {
-            task.getMinecraftVersion().set(extension.getMinecraftVersion());
+        String strataCacheDir = extension.getCacheDir().isPresent() ?
+                extension.getCacheDir().get() :
+                project.getLayout().getBuildDirectory().dir("strata-cache").get().getAsFile().getAbsolutePath();
 
-            if (extension.getCacheDir().isPresent()) {
-                task.getCacheDir().set(extension.getCacheDir());
-            } else {
-                String strataCacheDir = project.getLayout().getBuildDirectory().dir("strata-cache").get().getAsFile().getAbsolutePath();
-                task.getCacheDir().set(strataCacheDir);
-            }
+        Strata strata = new Strata(strataCacheDir);
+        strata.init();
+
+        // register tasks
+        project.getTasks().register("setupStrata", SetupTask.class);
+
+        project.getTasks().register("downloadMinecraftJar", DownloadMinecraftJarTask.class, task -> {
+            task.getStrataProperty().set(strata);
+            task.getMinecraftVersionProperty().set(extension.getMinecraftVersion());
         });
     }
 
