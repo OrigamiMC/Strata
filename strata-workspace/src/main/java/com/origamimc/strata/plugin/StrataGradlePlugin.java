@@ -2,10 +2,7 @@ package com.origamimc.strata.plugin;
 
 
 import com.origamimc.strata.Strata;
-import com.origamimc.strata.plugin.tasks.DecompileMinecraftJarTask;
-import com.origamimc.strata.plugin.tasks.DownloadMinecraftJarTask;
-import com.origamimc.strata.plugin.tasks.SetupGitRepoTask;
-import com.origamimc.strata.plugin.tasks.SetupTask;
+import com.origamimc.strata.plugin.tasks.*;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 
@@ -22,6 +19,10 @@ public class StrataGradlePlugin implements Plugin<Project> {
         String sourceDir = extension.getSourceDir().isPresent() ?
                 extension.getSourceDir().get() :
                 project.getLayout().getProjectDirectory().dir("src/main/java").getAsFile().getAbsolutePath();
+
+        String patchesDir = extension.getPatchesDir().isPresent() ?
+                extension.getPatchesDir().get() :
+                project.getLayout().getProjectDirectory().dir("patches").getAsFile().getAbsolutePath();
 
         Strata strata = new Strata(cacheDir, sourceDir);
         strata.init();
@@ -42,6 +43,18 @@ public class StrataGradlePlugin implements Plugin<Project> {
         project.getTasks().register("setupGitRepo", SetupGitRepoTask.class, task -> {
             task.getStrataProperty().set(strata);
             task.getMinecraftVersionProperty().set(extension.getMinecraftVersion());
+        });
+
+        project.getTasks().register("applyFilePatches", ApplyFilePatchesTask.class, task -> {
+            task.getStrataProperty().set(strata);
+            task.getMinecraftVersionProperty().set(extension.getMinecraftVersion());
+            task.getPatchesDirProperty().set(patchesDir);
+        });
+
+        project.getTasks().register("rebuildFilePatches", RebuildFilePatchesTask.class, task -> {
+            task.getStrataProperty().set(strata);
+            task.getMinecraftVersionProperty().set(extension.getMinecraftVersion());
+            task.getPatchesDirProperty().set(patchesDir);
         });
     }
 
