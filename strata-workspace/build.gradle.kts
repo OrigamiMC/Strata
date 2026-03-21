@@ -18,11 +18,11 @@ repositories {
 }
 
 dependencies {
-    implementation("io.codechicken:DiffPatch:2.1.0.43")
-    implementation("org.vineflower:vineflower:1.11.2")
-    implementation("com.google.code.gson:gson:2.13.2")
-    implementation("de.oliver.FancyAnalytics:logger:0.0.8")
-    implementation("org.jetbrains:annotations:26.1.0")
+    compileOnly("io.codechicken:DiffPatch:2.1.0.43")
+    compileOnly("org.vineflower:vineflower:1.11.2")
+    compileOnly("com.google.code.gson:gson:2.13.2")
+    compileOnly("de.oliver.FancyAnalytics:logger:0.0.10")
+    compileOnly("org.jetbrains:annotations:26.1.0")
 }
 
 gradlePlugin {

@@ -5,6 +5,9 @@ import com.origamimc.strata.Strata;
 import com.origamimc.strata.plugin.tasks.*;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository;
+import org.gradle.api.provider.Property;
+import org.jspecify.annotations.NonNull;
 
 public class StrataGradlePlugin implements Plugin<Project> {
 
@@ -27,7 +30,7 @@ public class StrataGradlePlugin implements Plugin<Project> {
         Strata strata = new Strata(cacheDir, sourceDir);
         strata.init();
 
-        // register tasks
+        // Register tasks
         project.getTasks().register("setupStrata", SetupTask.class);
 
         project.getTasks().register("downloadMinecraftJar", DownloadMinecraftJarTask.class, task -> {
@@ -55,6 +58,12 @@ public class StrataGradlePlugin implements Plugin<Project> {
             task.getStrataProperty().set(strata);
             task.getMinecraftVersionProperty().set(extension.getMinecraftVersion());
             task.getPatchesDirProperty().set(patchesDir);
+        });
+
+        // Add Minecraft libraries repository
+        project.getRepositories().maven(repo -> {
+            repo.setName("Minecraft Libraries");
+            repo.setUrl("https://libraries.minecraft.net/");
         });
     }
 

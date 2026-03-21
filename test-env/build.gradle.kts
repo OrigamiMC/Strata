@@ -9,10 +9,6 @@ java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(25))
 }
 
-repositories {
-    maven(url = "https://libraries.minecraft.net/")
-}
-
 dependencies {
     implementation(fileTree("../strata-cache/server-libraries/libraries-26.1-pre-3") {
         include("**/*.jar")
@@ -25,7 +21,9 @@ dependencies {
 
 strata {
     minecraftVersion.set("26.1-rc-2")
-//    cacheDir.set(file("strata-cache").absolutePath)
+//    cacheDir.set(layout.buildDirectory.dir("strata-cache").get().asFile.absolutePath)
+//    sourceDir.set(file("src/main/java").absolutePath)
+//    patchesDir.set(file("patches").absolutePath)
 }
 
 tasks {
