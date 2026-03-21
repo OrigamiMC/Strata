@@ -25,6 +25,7 @@ dependencies {
 
 strata {
     minecraftVersion.set("26.1-rc-2")
+//    cacheDir.set(file("strata-cache").absolutePath)
 }
 
 tasks {
