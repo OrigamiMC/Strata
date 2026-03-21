@@ -26,6 +26,12 @@ public class MojangService {
     }
 
     public PistonVersionDetails getVersion(String version) {
+        if (version.equalsIgnoreCase("latest") || version.equalsIgnoreCase("latest-release")) {
+            return getLatestRelease();
+        } else if (version.equalsIgnoreCase("latest-snapshot")) {
+            return getLatestSnapshot();
+        }
+
         PistonVersionManifestV2 manifest = fetchPistonVersionManifest();
         if (manifest == null) {
             return null;
