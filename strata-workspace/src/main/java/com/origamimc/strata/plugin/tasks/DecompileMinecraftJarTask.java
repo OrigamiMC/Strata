@@ -7,41 +7,34 @@ import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.TaskAction;
 
-public class DownloadMinecraftJarTask extends DefaultTask {
+public class DecompileMinecraftJarTask extends DefaultTask {
 
     @Input
     private final Property<Strata> strataProperty = getProject().getObjects().property(Strata.class);
 
     @Input
-    private final Property<String> minecraftVersionProperty = getProject().getObjects()
-            .property(String.class)
-            .convention("latest-release");
+    private final Property<String> minecraftVersionProperty = getProject().getObjects().property(String.class);
 
-    public DownloadMinecraftJarTask() {
+
+    public DecompileMinecraftJarTask() {
         setGroup("strata internal");
-        setDescription("Downloads the Minecraft server jar and it's libraries");
+        setDescription("Decompiles the Minecraft server jar");
+        dependsOn("downloadMinecraftJar");
     }
 
     @TaskAction
     public void downloadSources() {
         Strata strata = strataProperty.get();
         String mcVersion = minecraftVersionProperty.get();
-
-        // fetch version manifest from Mojang api
-        PistonVersionDetails latest = strata.getMojangService().getVersion(mcVersion);
-        if (latest == null) {
+        PistonVersionDetails versionDetails = strata.getMojangService().getVersion(mcVersion);
+        if (versionDetails == null) {
             return;
         }
 
-        // download jar from Mojang api
-        if (!strata.getMojangService().downloadServerBundle(latest)) {
-            return;
-        }
-
-        // extract the server jar and libraries from jar
-        if (!strata.getExtractorService().extractServerBundle(latest.id())) {
-            return;
-        }
+        strata.getDecompilerService().decompile(
+                strata.getExtractorService().getServerJarPath(versionDetails.id()),
+                versionDetails.id()
+        );
     }
 
     public Property<Strata> getStrataProperty() {

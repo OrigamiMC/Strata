@@ -2,6 +2,7 @@ package com.origamimc.strata.plugin;
 
 
 import com.origamimc.strata.Strata;
+import com.origamimc.strata.plugin.tasks.DecompileMinecraftJarTask;
 import com.origamimc.strata.plugin.tasks.DownloadMinecraftJarTask;
 import com.origamimc.strata.plugin.tasks.SetupTask;
 import org.gradle.api.Plugin;
@@ -24,6 +25,11 @@ public class StrataGradlePlugin implements Plugin<Project> {
         project.getTasks().register("setupStrata", SetupTask.class);
 
         project.getTasks().register("downloadMinecraftJar", DownloadMinecraftJarTask.class, task -> {
+            task.getStrataProperty().set(strata);
+            task.getMinecraftVersionProperty().set(extension.getMinecraftVersion());
+        });
+
+        project.getTasks().register("decompileMinecraftJar", DecompileMinecraftJarTask.class, task -> {
             task.getStrataProperty().set(strata);
             task.getMinecraftVersionProperty().set(extension.getMinecraftVersion());
         });
