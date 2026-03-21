@@ -1,11 +1,11 @@
 package com.origamimc.strata;
 
+import com.google.gson.Gson;
 import com.origamimc.strata.decompiler.DecompilerService;
 import com.origamimc.strata.extractor.ExtractorService;
 import com.origamimc.strata.mojang.MojangService;
 import com.origamimc.strata.patcher.PatcherService;
 import com.origamimc.strata.workspace.WorkspaceService;
-import com.google.gson.Gson;
 import de.oliver.fancyanalytics.logger.ExtendedFancyLogger;
 import de.oliver.fancyanalytics.logger.LogLevel;
 import de.oliver.fancyanalytics.logger.appender.ConsoleAppender;
@@ -19,6 +19,7 @@ public class Strata {
 
     private final ExtendedFancyLogger logger;
     private final File cacheDir;
+    private final File sourceDir;
 
     private final MojangService mojangService;
     private final ExtractorService extractorService;
@@ -26,7 +27,7 @@ public class Strata {
     private final WorkspaceService workspaceService;
     private final PatcherService patcherService;
 
-    public Strata(String cacheDirPath) {
+    public Strata(String cacheDirPath, String sourceDirPath) {
         logger = new ExtendedFancyLogger(
                 "Strata",
                 LogLevel.INFO,
@@ -41,6 +42,16 @@ public class Strata {
                 logger.info("Created cache directory at " + cacheDir.getAbsolutePath());
             } else {
                 logger.warn("Failed to create cache directory at " + cacheDir.getAbsolutePath());
+            }
+        }
+
+        sourceDir = new File(sourceDirPath);
+        if (!sourceDir.exists()) {
+            boolean created = sourceDir.mkdirs();
+            if (created) {
+                logger.info("Created source directory at " + sourceDir.getAbsolutePath());
+            } else {
+                logger.warn("Failed to create source directory at " + sourceDir.getAbsolutePath());
             }
         }
 
@@ -61,6 +72,10 @@ public class Strata {
 
     public File getCacheDir() {
         return cacheDir;
+    }
+
+    public File getSourceDir() {
+        return sourceDir;
     }
 
     public MojangService getMojangService() {

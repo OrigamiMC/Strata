@@ -11,7 +11,8 @@ public class Main {
      */
     public static void main(String[] args) {
         String cacheDir = "tools/strata/strata-cache";
-        Strata strata = new Strata(cacheDir);
+        String sourceDir = "tools/strata/minecraft-source/src/main";
+        Strata strata = new Strata(cacheDir, sourceDir);
         strata.init();
 
         // Get the latest snapshot version and download it
@@ -26,23 +27,22 @@ public class Main {
         );
 
         // Setup git repo
-        String gitDir = "tools/strata/minecraft-source/src/main/java";
-        strata.getWorkspaceService().initGitDirectory(gitDir);
+        strata.getWorkspaceService().initGitDirectory();
         sleep(1000);
 
         // Add decompiled sources and resources
-        strata.getWorkspaceService().copyDecompiledSources(latest.id(), gitDir);
-        strata.getWorkspaceService().copyDataAndAssets(latest.id(), "tools/strata/minecraft-source/src/main/resources");
-        strata.getWorkspaceService().gitCommit(gitDir, "Add decompiled sources");
-        strata.getWorkspaceService().gitTag(gitDir, WorkspaceService.DECOMPILED_SOURCES_TAG);
+        strata.getWorkspaceService().copyDecompiledSources(latest.id());
+        strata.getWorkspaceService().copyDataAndAssets(latest.id());
+        strata.getWorkspaceService().gitCommit("Add decompiled sources");
+        strata.getWorkspaceService().gitTag(WorkspaceService.DECOMPILED_SOURCES_TAG);
         sleep(1000);
 
         // Apply patches
         String patchesDir = "tools/strata/minecraft-source/patches";
-        strata.getPatcherService().applyFilePatches(cacheDir+"/decompiled/"+latest.id(), gitDir, patchesDir+"/files", patchesDir+"/rejected-files");
+        strata.getPatcherService().applyFilePatches(cacheDir+"/decompiled/"+latest.id(), sourceDir, patchesDir+"/files", patchesDir+"/rejected-files");
         sleep(1000);
-        strata.getWorkspaceService().gitCommit(gitDir, "Apply file patches");
-        strata.getWorkspaceService().gitTag(gitDir, WorkspaceService.FILE_PATCHES_TAG);
+        strata.getWorkspaceService().gitCommit("Apply file patches");
+        strata.getWorkspaceService().gitTag(WorkspaceService.FILE_PATCHES_TAG);
         sleep(1000);
 
         strata.getLogger().info("Done with setting up workspace for version " + latest.id());
@@ -56,7 +56,8 @@ public class Main {
      * For minecraft-diff
      */
     public static void main2(String[] args) {
-        Strata strata = new Strata("tools/strata/strata-cache");
+        String gitDir = "tools/strata/minecraft-diff/src";
+        Strata strata = new Strata("tools/strata/strata-cache", gitDir);
         strata.init();
 
         String version = "26.1-pre-3";
@@ -69,12 +70,12 @@ public class Main {
                 ver.id()
         );
 
-        String gitDir = "tools/strata/minecraft-diff/src";
-        strata.getWorkspaceService().copyDecompiledSources(ver.id(), gitDir);
+
+        strata.getWorkspaceService().copyDecompiledSources(ver.id());
 
         sleep(1000);
 
-        strata.getWorkspaceService().gitCommit(gitDir, "Update to " + version);
+        strata.getWorkspaceService().gitCommit("Update to " + version);
     }
 
     private static void sleep(long millis) {

@@ -56,7 +56,6 @@ public class DecompilerService {
                 .option("bytecode-source-mapping", "true")
                 .option("dump-code-lines", "true")
                 .option("override-annotation", "false")
-                .option("skip-extra-files", "true")
                 .logger(decompilerLogger)
                 .build();
 

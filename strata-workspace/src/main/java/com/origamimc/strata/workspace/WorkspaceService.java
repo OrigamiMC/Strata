@@ -22,7 +22,9 @@ public class WorkspaceService {
         this.strata = strata;
     }
 
-    public void copyDecompiledSources(String versionID, String targetDir) {
+    public void copyDecompiledSources(String versionID) {
+        String targetDir = strata.getSourceDir().getAbsolutePath();
+
         // Delete all existing files in the target directory
         try {
             if (Files.exists(Paths.get(targetDir))) {
@@ -91,9 +93,14 @@ public class WorkspaceService {
         strata.getLogger().info("Copying decompiled sources completed");
     }
 
-    public void copyDataAndAssets(String versionID, String targetDir) {
+    public void copyDataAndAssets(String versionID) {
         Path cacheDir = strata.getCacheDir().toPath();
         Path sourceDir = cacheDir.resolve("decompiled").resolve(versionID);
+        String targetDir = strata.getSourceDir().toPath()
+                .getParent().resolve("resources") // "../resource"
+                .toAbsolutePath().toString();
+
+        System.out.println("Resources dir: " + targetDir);
 
         // Copy data and assets directories
         try {
@@ -130,7 +137,9 @@ public class WorkspaceService {
         strata.getLogger().info("Copying data and assets completed");
     }
 
-    public void initGitDirectory(String gitDir) {
+    public void initGitDirectory() {
+        String gitDir = strata.getSourceDir().getAbsolutePath();
+
         // check if the target directory exists, if not create it
         if (!Files.exists(Paths.get(gitDir))) {
             try {
@@ -147,7 +156,7 @@ public class WorkspaceService {
 
         // check if .git exists in the target directory, if not create it and run git init
         if (Files.exists(Paths.get(gitDir, ".git"))) {
-            gitResetHard(gitDir, INITIAL_TAG);
+            gitResetHard(INITIAL_TAG);
             strata.getLogger().info("Git repository already exists in: " + gitDir + ", reset to initial tag");
             return;
         }
@@ -171,13 +180,15 @@ public class WorkspaceService {
         }
 
         // initial commit
-        gitCommit(gitDir, "Initial commit");
+        gitCommit("Initial commit");
 
         // create initial tag
-        gitTag(gitDir, INITIAL_TAG);
+        gitTag(INITIAL_TAG);
     }
 
-    public void gitCommit(String gitDir, String message) {
+    public void gitCommit(String message) {
+        String gitDir = strata.getSourceDir().getAbsolutePath();
+
         try {
             ProcessBuilder processBuilder = new ProcessBuilder("git", "add", ".");
             processBuilder.directory(new File(gitDir));
@@ -222,7 +233,9 @@ public class WorkspaceService {
         }
     }
 
-    public void gitTag(String gitDir, String tagName) {
+    public void gitTag(String tagName) {
+        String gitDir = strata.getSourceDir().getAbsolutePath();
+
         try {
             ProcessBuilder processBuilder = new ProcessBuilder(
                     "git",
@@ -249,7 +262,9 @@ public class WorkspaceService {
         }
     }
 
-    public void gitResetHard(String gitDir, String tagName) {
+    public void gitResetHard(String tagName) {
+        String gitDir = strata.getSourceDir().getAbsolutePath();
+
         try {
             ProcessBuilder processBuilder = new ProcessBuilder(
                     "git",

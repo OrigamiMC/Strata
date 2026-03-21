@@ -10,3 +10,5 @@
 .idea
 .project
 .classpath
+
+test-env/src
