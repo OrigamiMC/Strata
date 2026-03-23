@@ -2,7 +2,7 @@ plugins {
     id("java")
     id("maven-publish")
     id("com.gradleup.shadow")
-    id("com.origamimc.strata-workspace") version "1.0.0-LOCAL-SNAPSHOT"
+    id("com.origamimc.strata-workspace") version "1.0.1"
 }
 
 java {
