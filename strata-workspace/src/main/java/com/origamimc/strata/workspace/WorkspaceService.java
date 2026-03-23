@@ -186,7 +186,7 @@ public class WorkspaceService {
         gitTag(INITIAL_TAG);
     }
 
-    public void gitCommit(String message) {
+    public void gitCommit(String message, boolean amend) {
         String gitDir = strata.getSourceDir().getAbsolutePath();
 
         try {
@@ -203,15 +203,24 @@ public class WorkspaceService {
                 return;
             }
 
-            processBuilder = new ProcessBuilder(
-                    "git",
-                    "commit",
-                    "--allow-empty",
-                    "--no-gpg-sign",
-                    "--author=" + AUTHOR,
-                    "-m",
-                    message
-            );
+            if (amend) {
+                processBuilder = new ProcessBuilder(
+                        "git",
+                        "commit",
+                        "--amend",
+                        "--no-edit"
+                );
+            } else {
+                processBuilder = new ProcessBuilder(
+                        "git",
+                        "commit",
+                        "--allow-empty",
+                        "--no-gpg-sign",
+                        "--author=" + AUTHOR,
+                        "-m",
+                        message
+                );
+            }
             processBuilder.directory(new File(gitDir));
             processBuilder.redirectErrorStream(true);
             processBuilder.redirectOutput(ProcessBuilder.Redirect.DISCARD);
@@ -231,6 +240,10 @@ public class WorkspaceService {
                     ThrowableProperty.of(e)
             );
         }
+    }
+
+    public void gitCommit(String message) {
+        gitCommit(message, false);
     }
 
     public void gitTag(String tagName) {

@@ -56,6 +56,10 @@ public class StrataGradlePlugin implements Plugin<Project> {
             task.getPatchesDirProperty().set(patchesDir.get());
         });
 
+        project.getTasks().register("fixFilePatches", FixFilePatchesTask.class, task -> {
+            task.getStrataProperty().set(strata);
+        });
+
         project.getTasks().register("rebuildFilePatches", RebuildFilePatchesTask.class, task -> {
             task.getStrataProperty().set(strata);
             task.getMinecraftVersionProperty().set(extension.getMinecraftVersion());
