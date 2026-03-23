@@ -14,15 +14,14 @@ java {
 
 repositories {
     mavenCentral()
-    maven("https://nexus.covers1624.net/repository/maven-releases/")
+    maven(url = "https://nexus.covers1624.net/repository/maven-releases/")
 }
 
 dependencies {
-    compileOnly("io.codechicken:DiffPatch:2.1.0.43")
-    compileOnly("org.vineflower:vineflower:1.11.2")
-    compileOnly("com.google.code.gson:gson:2.13.2")
-    compileOnly("de.oliver.FancyAnalytics:logger:0.0.10")
-    compileOnly("org.jetbrains:annotations:26.1.0")
+    implementation("io.codechicken:DiffPatch:2.1.0.43")
+    implementation("com.google.code.gson:gson:2.13.2")
+    implementation("de.oliver.FancyAnalytics:logger:0.0.10")
+    implementation("org.jetbrains:annotations:26.1.0")
 }
 
 gradlePlugin {

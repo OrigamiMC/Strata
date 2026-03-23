@@ -1,16 +1,20 @@
 package com.origamimc.strata.decompiler;
 
 import com.origamimc.strata.Strata;
-import de.oliver.fancyanalytics.logger.LogLevel;
 import de.oliver.fancyanalytics.logger.properties.ThrowableProperty;
-import org.jetbrains.java.decompiler.api.Decompiler;
-import org.jetbrains.java.decompiler.main.decompiler.DirectoryResultSaver;
-import org.jetbrains.java.decompiler.main.extern.IFernflowerLogger;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.file.Path;
 
 public class DecompilerService {
+
+    private static final String VINEFLOWER_DOWNLOAD_URL = "https://github.com/Vineflower/vineflower/releases/download/1.11.2/vineflower-1.11.2.jar";
+    private static final String VINEFLOWER_FILE_NAME = "vineflower-1.11.2.jar";
 
     private final Strata strata;
 
@@ -34,77 +38,75 @@ public class DecompilerService {
             return;
         }
 
-        DecompilerLogger decompilerLogger = new DecompilerLogger();
-        decompilerLogger.setSeverity(IFernflowerLogger.Severity.WARN);
+        downloadVineflower();
 
-        Decompiler decompiler = Decompiler.builder()
-                .inputs(inputFile)
-                .output(new DirectoryResultSaver(outputDir))
-                .option("synthetic-not-set", "true")
-                .option("ternary-constant-simplification", "true")
-                .option("include-runtime", "current")
-                .option("decompile-complex-constant-dynamic", "true")
-                .option("indent-string", "    ")
-                .option("decompile-inner", "true")
-                .option("remove-bridge", "true")
-                .option("decompile-generics", "true")
-                .option("ascii-strings", "false")
-                .option("remove-synthetic", "true")
-                .option("include-classpath", "true")
-                .option("inline-simple-lambdas", "true")
-                .option("ignore-invalid-bytecode", "false")
-                .option("bytecode-source-mapping", "true")
-                .option("dump-code-lines", "true")
-                .option("override-annotation", "false")
-                .logger(decompilerLogger)
-                .build();
+        strata.getLogger().info("Starting to decompile server jar ...");
 
-        decompiler.decompile();
+        try {
+            String vineflowerPath = strata.getCacheDir().toPath().resolve(VINEFLOWER_FILE_NAME).toString();
+            ProcessBuilder processBuilder = new ProcessBuilder(
+                    "java", "-jar", vineflowerPath,
+                    "--log-level=error",
+                    "--synthetic-not-set=true",
+                    "--ternary-constant-simplification=true",
+                    "--include-runtime=current",
+                    "--decompile-complex-constant-dynamic=true",
+                    "--indent-string=    ",
+                    "--decompile-inner=true",
+                    "--remove-bridge=true",
+                    "--decompile-generics=true",
+                    "--ascii-strings=false",
+                    "--remove-synthetic=true",
+                    "--include-classpath=true",
+                    "--inline-simple-lambdas=true",
+                    "--ignore-invalid-bytecode=false",
+                    "--bytecode-source-mapping=true",
+                    "--dump-code-lines=true",
+                    "--override-annotation=false",
+                    inputJarPath,
+                    outputDirPath
+            );
+            Process process = processBuilder.start();
+            int exitCode = process.waitFor();
+            if (exitCode != 0) {
+                strata.getLogger().error("Vineflower decompiler process exited with code: " + exitCode);
+                return;
+            }
+        } catch (IOException | InterruptedException e) {
+            strata.getLogger().error("Failed to start Vineflower decompiler process", ThrowableProperty.of(e));
+        }
 
         strata.getLogger().info("Decompilation completed. Output directory: " + outputDirPath);
     }
 
-    class DecompilerLogger extends IFernflowerLogger {
-
-        public DecompilerLogger() {
-            super();
-
-            setSeverity(Severity.WARN);
+    private void downloadVineflower() {
+        Path vineflowerPath = strata.getCacheDir().toPath().resolve(VINEFLOWER_FILE_NAME);
+        if (vineflowerPath.toFile().exists()) {
+            return;
         }
 
-        @Override
-        public void writeMessage(String s, Severity severity) {
-            LogLevel logLevel = switch (severity) {
-                case TRACE -> LogLevel.DEBUG;
-                case INFO -> LogLevel.INFO;
-                case WARN -> LogLevel.WARN;
-                case ERROR -> LogLevel.ERROR;
-            };
+        strata.getLogger().info("Downloading Vineflower decompiler...");
 
-            if (severity.ordinal() <= 1) {
-                // Don't log stack traces for INFO and TRACE messages
+        HttpRequest req = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create(VINEFLOWER_DOWNLOAD_URL))
+                .build();
+
+        try {
+            HttpResponse<Path> resp = HttpClient.newBuilder()
+                    .followRedirects(HttpClient.Redirect.NORMAL)
+                    .build()
+                    .send(req, HttpResponse.BodyHandlers.ofFile(vineflowerPath));
+            if (resp.statusCode() != 200) {
+                strata.getLogger().error("Failed to download Vineflower decompiler. HTTP status code: " + resp.statusCode());
                 return;
             }
 
-            strata.getLogger().log(logLevel, s);
+        } catch (IOException | InterruptedException e) {
+            strata.getLogger().error("Failed to download Vineflower decompiler", ThrowableProperty.of(e));
         }
 
-        @Override
-        public void writeMessage(String s, Severity severity, Throwable throwable) {
-            LogLevel logLevel = switch (severity) {
-                case TRACE -> LogLevel.DEBUG;
-                case INFO -> LogLevel.INFO;
-                case WARN -> LogLevel.WARN;
-                case ERROR -> LogLevel.ERROR;
-            };
-
-            if (severity.ordinal() <= 1) {
-                // Don't log stack traces for INFO and TRACE messages
-                return;
-            }
-
-            strata.getLogger().log(logLevel, s, ThrowableProperty.of(throwable));
-        }
+        strata.getLogger().info("Downloaded Vineflower decompiler to: " + vineflowerPath);
     }
 
 }

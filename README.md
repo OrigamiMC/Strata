@@ -2,9 +2,15 @@
 
 Gradle plugin for the Origami Minecraft fork.
 
+Features:
+- Fetch Minecraft version manifests from the official Mojang API
+- Download Minecraft server jar and libraries
+- Decompile Minecraft server jar using VineFlower
+- Apply patches to the decompiled source code
+
 ## Usage
 
-Add this repo to the `settings.gradle` file:
+Add this repo to the `settings.gradle.kts` file:
 
 ```kotlin
 pluginManagement {
@@ -16,7 +22,7 @@ pluginManagement {
 }
 ```
 
-Then apply the plugin in your `build.gradle` file:
+Then apply the plugin in your `build.gradle.kts` file:
 
 ```kotlin
 plugins {
@@ -24,7 +30,7 @@ plugins {
 }
 ```
 
-You can configure strata in your `build.gradle` file:
+You can configure strata in your `build.gradle.kts` file:
 
 ```kotlin
 strata {

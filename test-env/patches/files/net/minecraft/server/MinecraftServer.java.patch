@@ -1,0 +1,11 @@
+--- a/net/minecraft/server/MinecraftServer.java
++++ b/net/minecraft/server/MinecraftServer.java
+@@ -1219,7 +_,7 @@
+     }
+ 
+     public String getServerModName() {
+-        return "vanilla";
++        return "strata";
+     }
+ 
+     public ServerClockManager clockManager() {
