@@ -26,6 +26,13 @@ public class PatcherService {
         this.strata = strata;
     }
 
+    private static void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+        }
+    }
+
     public void rebuildFilePatches(String originalSourcePath, String patchedSourcePath, String patchesPath) {
         // Delete existing patches
         try {
@@ -137,6 +144,7 @@ public class PatcherService {
                     StringProperty.of("patchedSourcePath", patchedSourcePath),
                     StringProperty.of("patchesPath", patchesPath)
             );
+            return;
         }
 
         sleep(1000);
@@ -188,13 +196,6 @@ public class PatcherService {
                     StringProperty.of("cachePath", cache.toString()),
                     StringProperty.of("patchedSourcePath", patchedSourcePath)
             );
-        }
-    }
-
-    private static void sleep(long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
         }
     }
 
