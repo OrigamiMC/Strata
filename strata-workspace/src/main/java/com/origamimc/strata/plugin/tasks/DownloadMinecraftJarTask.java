@@ -20,6 +20,7 @@ public class DownloadMinecraftJarTask extends DefaultTask {
     public DownloadMinecraftJarTask() {
         setGroup("strata internal");
         setDescription("Downloads the Minecraft server jar and it's libraries");
+        dependsOn("initStrata");
     }
 
     @TaskAction

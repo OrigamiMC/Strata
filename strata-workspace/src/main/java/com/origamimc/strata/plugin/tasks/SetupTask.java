@@ -8,7 +8,7 @@ public class SetupTask extends DefaultTask {
     public SetupTask() {
         setGroup("strata");
         setDescription("Sets up the strata environment");
-        dependsOn("setupGitRepo");
+        dependsOn("setupGitRepo", "initStrata");
     }
 
     @TaskAction

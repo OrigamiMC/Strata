@@ -19,7 +19,7 @@ public class DecompileMinecraftJarTask extends DefaultTask {
     public DecompileMinecraftJarTask() {
         setGroup("strata internal");
         setDescription("Decompiles the Minecraft server jar");
-        dependsOn("downloadMinecraftJar");
+        dependsOn("downloadMinecraftJar", "initStrata");
     }
 
     @TaskAction

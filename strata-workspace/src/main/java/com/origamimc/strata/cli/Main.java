@@ -4,14 +4,16 @@ import com.origamimc.strata.Strata;
 import com.origamimc.strata.mojang.PistonVersionDetails;
 import com.origamimc.strata.workspace.WorkspaceService;
 
+import java.util.function.Supplier;
+
 public class Main {
 
     /**
      *  For minecraft-source
      */
     public static void main(String[] args) {
-        String cacheDir = "tools/strata/strata-cache";
-        String sourceDir = "tools/strata/minecraft-source/src/main";
+        Supplier<String> cacheDir = () -> "tools/strata/strata-cache";
+        Supplier<String> sourceDir = () -> "tools/strata/minecraft-source/src/main";
         Strata strata = new Strata(cacheDir, sourceDir);
         strata.init();
 
@@ -39,7 +41,7 @@ public class Main {
 
         // Apply patches
         String patchesDir = "tools/strata/minecraft-source/patches";
-        strata.getPatcherService().applyFilePatches(cacheDir+"/decompiled/"+latest.id(), sourceDir, patchesDir+"/files", patchesDir+"/rejected-files");
+        strata.getPatcherService().applyFilePatches(cacheDir+"/decompiled/"+latest.id(), sourceDir.get(), patchesDir+"/files", patchesDir+"/rejected-files");
         sleep(1000);
         strata.getWorkspaceService().gitCommit("Apply file patches");
         strata.getWorkspaceService().gitTag(WorkspaceService.FILE_PATCHES_TAG);
@@ -57,7 +59,7 @@ public class Main {
      */
     public static void main2(String[] args) {
         String gitDir = "tools/strata/minecraft-diff/src";
-        Strata strata = new Strata("tools/strata/strata-cache", gitDir);
+        Strata strata = new Strata(() -> "tools/strata/strata-cache", () -> gitDir);
         strata.init();
 
         String version = "26.1-pre-3";

@@ -23,6 +23,7 @@ public class ApplyFilePatchesTask extends DefaultTask {
     public ApplyFilePatchesTask() {
         setGroup("strata");
         setDescription("Apply per-file patches to the Minecraft source code");
+        dependsOn("initStrata");
     }
 
     @TaskAction

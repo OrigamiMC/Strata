@@ -23,6 +23,7 @@ public class RebuildFilePatchesTask extends DefaultTask {
     public RebuildFilePatchesTask() {
         setGroup("strata");
         setDescription("Rebuilds the file patches based on the current source code and the decompiled sources");
+        dependsOn("initStrata");
     }
 
     @TaskAction

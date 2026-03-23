@@ -12,30 +12,39 @@ import de.oliver.fancyanalytics.logger.appender.ConsoleAppender;
 
 import java.io.File;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class Strata {
 
     public static Gson GSON = new Gson();
 
     private final ExtendedFancyLogger logger;
-    private final File cacheDir;
-    private final File sourceDir;
+    private final Supplier<String> cacheDirPath;
+    private final Supplier<String> sourceDirPath;
 
-    private final MojangService mojangService;
-    private final ExtractorService extractorService;
-    private final DecompilerService decompilerService;
-    private final WorkspaceService workspaceService;
-    private final PatcherService patcherService;
+    private File cacheDir;
+    private File sourceDir;
+    private MojangService mojangService;
+    private ExtractorService extractorService;
+    private DecompilerService decompilerService;
+    private WorkspaceService workspaceService;
+    private PatcherService patcherService;
 
-    public Strata(String cacheDirPath, String sourceDirPath) {
+    public Strata(Supplier<String> cacheDirPath, Supplier<String> sourceDirPath) {
         logger = new ExtendedFancyLogger(
                 "Strata",
                 LogLevel.INFO,
                 List.of(new ConsoleAppender()),
                 List.of()
         );
+        this.cacheDirPath = cacheDirPath;
+        this.sourceDirPath = sourceDirPath;
+    }
 
-        cacheDir = new File(cacheDirPath);
+    public void init() {
+        logger.info("Initializing Strata...");
+
+        cacheDir = new File(cacheDirPath.get());
         if (!cacheDir.exists()) {
             boolean created = cacheDir.mkdirs();
             if (created) {
@@ -45,7 +54,7 @@ public class Strata {
             }
         }
 
-        sourceDir = new File(sourceDirPath);
+        sourceDir = new File(sourceDirPath.get());
         if (!sourceDir.exists()) {
             boolean created = sourceDir.mkdirs();
             if (created) {
@@ -60,10 +69,6 @@ public class Strata {
         decompilerService = new DecompilerService(this);
         workspaceService = new WorkspaceService(this);
         patcherService = new PatcherService(this);
-    }
-
-    public void init() {
-        logger.info("Initializing Strata...");
     }
 
     public ExtendedFancyLogger getLogger() {

@@ -21,7 +21,7 @@ public class SetupGitRepoTask extends DefaultTask {
     public SetupGitRepoTask() {
         setGroup("strata internal");
         setDescription("Sets up the internal git repository for the Minecraft sources");
-        dependsOn("decompileMinecraftJar");
+        dependsOn("decompileMinecraftJar", "initStrata");
     }
 
     @TaskAction
