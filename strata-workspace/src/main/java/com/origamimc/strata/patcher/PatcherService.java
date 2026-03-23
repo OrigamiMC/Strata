@@ -1,6 +1,7 @@
 package com.origamimc.strata.patcher;
 
 import com.origamimc.strata.Strata;
+import com.origamimc.strata.workspace.WorkspaceService;
 import de.oliver.fancyanalytics.logger.properties.StringProperty;
 import de.oliver.fancyanalytics.logger.properties.ThrowableProperty;
 import io.codechicken.diffpatch.cli.CliOperation;
@@ -16,7 +17,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 public class PatcherService {
 
@@ -198,5 +202,95 @@ public class PatcherService {
             );
         }
     }
+
+    public void rebuildFeaturePatches(String patchesPath) {
+        // Clear patches directory
+        if (new File(patchesPath).exists()) {
+            try {
+                Files.walk(Path.of(patchesPath))
+                        .sorted(Comparator.reverseOrder())
+                        .map(Path::toFile)
+                        .forEach(File::delete);
+            } catch (IOException e) {
+                strata.getLogger().error(
+                        "Failed to clear patches dir",
+                        ThrowableProperty.of(e),
+                        StringProperty.of("patchesPath", patchesPath)
+                );
+                return;
+            }
+        }
+
+        String gitDir = strata.getSourceDir().getAbsolutePath();
+
+        try {
+            ProcessBuilder processBuilder = new ProcessBuilder(
+                    "git",
+                    "format-patch",
+                    WorkspaceService.FILE_PATCHES_TAG + "..HEAD",
+                    "--no-signature",
+                    "--output-directory=" + patchesPath
+            );
+            processBuilder.directory(new File(gitDir));
+            processBuilder.redirectErrorStream(true);
+            processBuilder.redirectOutput(ProcessBuilder.Redirect.DISCARD);
+
+            Process process = processBuilder.start();
+            int exitCode = process.waitFor();
+            if (exitCode == 0) {
+                strata.getLogger().info("Finished rebuilding feature patches");
+            } else {
+                strata.getLogger().error("Failed to rebuild feature patches, git process exited with code " + exitCode);
+            }
+        } catch (Exception e) {
+            strata.getLogger().error(
+                    "Failed to rebuild feature patches",
+                    ThrowableProperty.of(e)
+            );
+        }
+    }
+
+    public void applyFeaturePatches(String patchesPath) {
+        String gitDir = strata.getSourceDir().getAbsolutePath();
+
+        File patchesDir = new File(patchesPath);
+        File[] patchFiles = patchesDir.listFiles((dir, name) -> name.endsWith(".patch"));
+
+        if (patchFiles == null || patchFiles.length == 0) {
+            strata.getLogger().info("No feature patches to apply");
+            return;
+        }
+
+        Arrays.sort(patchFiles); // ensure patches are applied in order
+
+        try {
+            List<String> command = new ArrayList<>();
+            command.add("git");
+            command.add("am");
+            command.add("--3way");
+            for (File patchFile : patchFiles) {
+                command.add(patchFile.getAbsolutePath());
+            }
+
+            ProcessBuilder processBuilder = new ProcessBuilder(command);
+            processBuilder.directory(new File(gitDir));
+            processBuilder.redirectErrorStream(true);
+            processBuilder.redirectOutput(ProcessBuilder.Redirect.DISCARD);
+
+            Process process = processBuilder.start();
+            int exitCode = process.waitFor();
+            if (exitCode == 0) {
+                strata.getLogger().info("Finished applying feature patches");
+            } else {
+                strata.getLogger().error("Failed to apply feature patches, git process exited with code " + exitCode);
+            }
+        } catch (Exception e) {
+            strata.getLogger().error(
+                    "Failed to apply feature patches",
+                    ThrowableProperty.of(e)
+            );
+        }
+    }
+
 
 }
