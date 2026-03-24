@@ -34,11 +34,19 @@ You can configure strata in your `build.gradle.kts` file:
 
 ```kotlin
 strata {
-    minecraftVersion.set("26.1-rc-2")
+    minecraftVersion.set("26.1")
     
     // optional
     // cacheDir.set(layout.buildDirectory.dir("strata-cache").get().asFile.absolutePath)
     // sourceDir.set(file("src/main/java").absolutePath)
     // patchesDir.set(file("patches").absolutePath)
 }
+```
+
+Set up the strata workspace:
+
+```bash
+./gradlew setupStrata
+./gradlew applyFilePatches
+./gradlew applyFeaturePatches
 ```
