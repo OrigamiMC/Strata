@@ -2,6 +2,7 @@ package com.origamimc.strata.cli;
 
 import com.origamimc.strata.Strata;
 import com.origamimc.strata.mojang.PistonVersionDetails;
+import com.origamimc.strata.utils.SleepUtils;
 import com.origamimc.strata.workspace.WorkspaceService;
 
 import java.util.function.Supplier;
@@ -30,22 +31,22 @@ public class Main {
 
         // Setup git repo
         strata.getWorkspaceService().initGitDirectory();
-        sleep(1000);
+        SleepUtils.sleep(1000);
 
         // Add decompiled sources and resources
         strata.getWorkspaceService().copyDecompiledSources(latest.id());
         strata.getWorkspaceService().copyDataAndAssets(latest.id());
         strata.getWorkspaceService().gitCommit("Add decompiled sources");
         strata.getWorkspaceService().gitTag(WorkspaceService.DECOMPILED_SOURCES_TAG);
-        sleep(1000);
+        SleepUtils.sleep(1000);
 
         // Apply patches
         String patchesDir = "tools/strata/minecraft-source/patches";
         strata.getPatcherService().applyFilePatches(cacheDir+"/decompiled/"+latest.id(), sourceDir.get(), patchesDir+"/files", patchesDir+"/rejected-files");
-        sleep(1000);
+        SleepUtils.sleep(1000);
         strata.getWorkspaceService().gitCommit("Apply file patches");
         strata.getWorkspaceService().gitTag(WorkspaceService.FILE_PATCHES_TAG);
-        sleep(1000);
+        SleepUtils.sleep(1000);
 
         strata.getLogger().info("Done with setting up workspace for version " + latest.id());
 
@@ -75,16 +76,9 @@ public class Main {
 
         strata.getWorkspaceService().copyDecompiledSources(ver.id());
 
-        sleep(1000);
+        SleepUtils.sleep(1000);
 
         strata.getWorkspaceService().gitCommit("Update to " + version);
-    }
-
-    private static void sleep(long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-        }
     }
 
 }

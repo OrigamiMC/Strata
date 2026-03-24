@@ -1,6 +1,7 @@
 package com.origamimc.strata.patcher;
 
 import com.origamimc.strata.Strata;
+import com.origamimc.strata.utils.SleepUtils;
 import com.origamimc.strata.workspace.WorkspaceService;
 import de.oliver.fancyanalytics.logger.properties.StringProperty;
 import de.oliver.fancyanalytics.logger.properties.ThrowableProperty;
@@ -28,13 +29,6 @@ public class PatcherService {
 
     public PatcherService(Strata strata) {
         this.strata = strata;
-    }
-
-    private static void sleep(long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-        }
     }
 
     public void rebuildFilePatches(String originalSourcePath, String patchedSourcePath, String patchesPath) {
@@ -112,7 +106,7 @@ public class PatcherService {
             }
         }
 
-        sleep(1000);
+        SleepUtils.sleep(1000);
 
         // Apply patches to original source, output to cache
         try {
@@ -151,7 +145,7 @@ public class PatcherService {
             return;
         }
 
-        sleep(1000);
+        SleepUtils.sleep(1000);
 
         // clear patchedSourcePath
         try {
@@ -172,7 +166,7 @@ public class PatcherService {
             return;
         }
 
-        sleep(1000);
+        SleepUtils.sleep(1000);
 
         // copy patched files to patchedSourcePath
         try {
