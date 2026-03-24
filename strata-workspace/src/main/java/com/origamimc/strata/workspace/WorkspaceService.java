@@ -137,7 +137,7 @@ public class WorkspaceService {
         strata.getLogger().info("Copying data and assets completed");
     }
 
-    public void initGitDirectory() {
+    public void initGitDirectory(String initialBranchName) {
         String gitDir = strata.getSourceDir().getAbsolutePath();
 
         // check if the target directory exists, if not create it
@@ -163,7 +163,7 @@ public class WorkspaceService {
 
         // git init
         try {
-            ProcessBuilder processBuilder = new ProcessBuilder("git", "init", "--initial-branch=strata");
+            ProcessBuilder processBuilder = new ProcessBuilder("git", "init", "--initial-branch=" + initialBranchName);
             processBuilder.directory(new File(gitDir));
             Process process = processBuilder.start();
             int exitCode = process.waitFor();
@@ -184,6 +184,10 @@ public class WorkspaceService {
 
         // create initial tag
         gitTag(INITIAL_TAG);
+    }
+
+    public void initGitDirectory() {
+        initGitDirectory("strata");
     }
 
     public void gitCommit(String message, boolean amend) {

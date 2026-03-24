@@ -12,3 +12,6 @@
 .classpath
 
 test-env/src
+
+mc-diff/strata-cache
+mc-diff/src
