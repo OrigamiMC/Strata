@@ -134,6 +134,10 @@ public class PatcherService {
                     StringProperty.of("patchedSourcePath", patchedSourcePath),
                     StringProperty.of("patchesPath", patchesPath)
             );
+
+            if (result.summary != null && result.summary.failedMatches > 0) {
+                strata.getLogger().warn(result.summary.failedMatches + " patches failed to apply cleanly, check rejects directory for details");
+            }
         } catch (IOException e) {
             strata.getLogger().error(
                     "Failed to apply file patches",
