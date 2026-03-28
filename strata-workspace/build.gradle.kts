@@ -79,6 +79,11 @@ tasks {
 
     shadowJar {
         archiveClassifier.set("")
+
+        dependsOn(":strata-bootstrap:shadowJar")
+        from("../strata-bootstrap/build/libs/strata-bootstrap.jar") {
+            into("META-INF/strata-bootstrap")
+        }
     }
 
     compileJava {

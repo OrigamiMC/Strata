@@ -10,4 +10,5 @@ pluginManagement {
 rootProject.name = "strata"
 
 include(":strata-workspace")
+include(":strata-bootstrap")
 include(":test-env")
