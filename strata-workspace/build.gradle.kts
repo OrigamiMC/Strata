@@ -19,6 +19,7 @@ repositories {
 
 dependencies {
     implementation("io.codechicken:DiffPatch:2.1.0.43")
+    implementation("io.sigpipe:jbsdiff:1.0")
     implementation("com.google.code.gson:gson:2.13.2")
     implementation("de.oliver.FancyAnalytics:logger:0.0.10")
     implementation("org.jetbrains:annotations:26.1.0")

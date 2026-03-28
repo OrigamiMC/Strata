@@ -13,9 +13,15 @@ import io.codechicken.diffpatch.util.Input;
 import io.codechicken.diffpatch.util.LogLevel;
 import io.codechicken.diffpatch.util.Output;
 import io.codechicken.diffpatch.util.PatchMode;
+import io.sigpipe.jbsdiff.Diff;
+import io.sigpipe.jbsdiff.DiffSettings;
+import io.sigpipe.jbsdiff.InvalidHeaderException;
+import io.sigpipe.jbsdiff.Patch;
+import org.apache.commons.compress.compressors.CompressorException;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -290,5 +296,38 @@ public class PatcherService {
         }
     }
 
+    public void createJarPatch(String originalFilePath, String patchedFilePath, String patchPath) {
+        try {
+            byte[] originalBytes = Files.readAllBytes(Path.of(originalFilePath));
+            byte[] patchedBytes = Files.readAllBytes(Path.of(patchedFilePath));
+            OutputStream patchOutputStream = Files.newOutputStream(Path.of(patchPath));
+            Diff.diff(originalBytes, patchedBytes, patchOutputStream);
+        } catch (IOException | CompressorException | InvalidHeaderException e) {
+            strata.getLogger().error(
+                    "Failed to create jar patch",
+                    ThrowableProperty.of(e),
+                    StringProperty.of("originalFilePath", originalFilePath),
+                    StringProperty.of("patchedFilePath", patchedFilePath),
+                    StringProperty.of("patchPath", patchPath)
+            );
+        }
+    }
+
+    public void patchJar(String originalFilePath, String patchedFilePath, String patchPath) {
+        try {
+            byte[] originalBytes = Files.readAllBytes(Path.of(originalFilePath));
+            byte[] patchBytes = Files.readAllBytes(Path.of(patchPath));
+            OutputStream patchedOutputstream = Files.newOutputStream(Path.of(patchedFilePath));
+            Patch.patch(originalBytes, patchBytes, patchedOutputstream);
+        } catch (IOException | CompressorException | InvalidHeaderException e) {
+            strata.getLogger().error(
+                    "Failed to patch jar",
+                    ThrowableProperty.of(e),
+                    StringProperty.of("originalFilePath", originalFilePath),
+                    StringProperty.of("patchedFilePath", patchedFilePath),
+                    StringProperty.of("patchPath", patchPath)
+            );
+        }
+    }
 
 }
