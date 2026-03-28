@@ -12,8 +12,8 @@ public class SetupTask extends DefaultTask {
     }
 
     @TaskAction
-    public void runStrata() {
-        System.out.println("Running Strata code generation...");
+    public void run() {
+
     }
 
 }

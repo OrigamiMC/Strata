@@ -23,7 +23,7 @@ public class DecompileMinecraftJarTask extends DefaultTask {
     }
 
     @TaskAction
-    public void downloadSources() {
+    public void run() {
         Strata strata = strataProperty.get();
         String mcVersion = minecraftVersionProperty.get();
         PistonVersionDetails versionDetails = strata.getMojangService().getVersion(mcVersion);

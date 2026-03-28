@@ -23,7 +23,7 @@ public class ApplyFeaturePatchesTask extends DefaultTask {
     }
 
     @TaskAction
-    public void downloadSources() {
+    public void run() {
         Strata strata = strataProperty.get();
         String patchesDir = patchesDirProperty.get();
 

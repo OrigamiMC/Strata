@@ -17,7 +17,7 @@ public class InitTask extends DefaultTask {
     }
 
     @TaskAction
-    public void downloadSources() {
+    public void run() {
         Strata strata = strataProperty.get();
         if (strata.getMojangService() == null) {
             strata.init();

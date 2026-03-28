@@ -20,7 +20,7 @@ public class FixFilePatchesTask extends DefaultTask {
     }
 
     @TaskAction
-    public void downloadSources() {
+    public void run() {
         Strata strata = strataProperty.get();
 
         // Add changes to commit
