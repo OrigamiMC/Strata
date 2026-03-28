@@ -297,6 +297,33 @@ public class PatcherService {
     }
 
     public void createJarPatch(String originalFilePath, String patchedFilePath, String patchPath) {
+        if (!Files.exists(Path.of(originalFilePath))) {
+            strata.getLogger().error(
+                    "Original file does not exist",
+                    StringProperty.of("originalFilePath", originalFilePath)
+            );
+            return;
+        }
+        if (!Files.exists(Path.of(patchedFilePath))) {
+            strata.getLogger().error(
+                    "Patched file does not exist",
+                    StringProperty.of("patchedFilePath", patchedFilePath)
+            );
+            return;
+        }
+        if (!Files.exists(Path.of(patchPath).getParent())) {
+            try {
+                Files.createDirectories(Path.of(patchPath).getParent());
+            } catch (IOException e) {
+                strata.getLogger().error(
+                        "Failed to create directories for patch output",
+                        ThrowableProperty.of(e),
+                        StringProperty.of("patchPath", patchPath)
+                );
+                return;
+            }
+        }
+
         try {
             byte[] originalBytes = Files.readAllBytes(Path.of(originalFilePath));
             byte[] patchedBytes = Files.readAllBytes(Path.of(patchedFilePath));

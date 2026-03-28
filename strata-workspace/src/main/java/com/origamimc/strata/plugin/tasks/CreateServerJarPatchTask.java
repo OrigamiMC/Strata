@@ -21,7 +21,7 @@ public class CreateServerJarPatchTask extends DefaultTask {
     public CreateServerJarPatchTask() {
         setGroup("strata");
         setDescription("Creates a bsdiff patch of the patched Minecraft server jar");
-        dependsOn("initStrata", "shadowJar");
+        dependsOn("initStrata", "jar");
     }
 
     @TaskAction
@@ -32,10 +32,9 @@ public class CreateServerJarPatchTask extends DefaultTask {
         if (versionDetails == null) {
             return;
         }
+
         String patchedJarPath = patchedJarPathProperty.get();
-
         String originalJarPath = strata.getCacheDir().toPath().resolve("server-jars/server-" + versionDetails.id() + ".jar").toString();
-
         String patchPath = strata.getCacheDir().toPath().resolve("server-jar-patches/server-" + versionDetails.id() + ".patch").toString();
 
         strata.getPatcherService().createJarPatch(originalJarPath, patchedJarPath, patchPath);

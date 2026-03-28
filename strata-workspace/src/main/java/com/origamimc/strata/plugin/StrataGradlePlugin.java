@@ -80,7 +80,7 @@ public class StrataGradlePlugin implements Plugin<Project> {
             task.getStrataProperty().set(strata);
             task.getMinecraftVersionProperty().set(extension.getMinecraftVersion());
 
-            String patchedJarFilePath = project.getTasks().getByPath("shadowJar").getOutputs().getFiles().getSingleFile().getAbsolutePath();
+            String patchedJarFilePath = project.getTasks().getByPath("jar").getOutputs().getFiles().getSingleFile().getAbsolutePath();
             task.getPatchedJarPathProperty().set(patchedJarFilePath);
         });
 
