@@ -84,6 +84,11 @@ public class StrataGradlePlugin implements Plugin<Project> {
             task.getPatchedJarPathProperty().set(patchedJarFilePath);
         });
 
+        project.getTasks().register("createBootstrapServerJar", CreateBoostrapServerJarTask.class, task -> {
+            task.getStrataProperty().set(strata);
+            task.getMinecraftVersionProperty().set(extension.getMinecraftVersion());
+        });
+
         // Add Minecraft libraries repository
         project.getRepositories().maven(repo -> {
             repo.setName("Minecraft Libraries");
