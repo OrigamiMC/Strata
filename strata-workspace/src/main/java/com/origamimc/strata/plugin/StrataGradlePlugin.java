@@ -26,6 +26,10 @@ public class StrataGradlePlugin implements Plugin<Project> {
                 extension.getPatchesDir().get() :
                 project.getLayout().getProjectDirectory().dir("patches").getAsFile().getAbsolutePath();
 
+        Supplier<String> bootstrapJarPath = () -> extension.getBootstrapJarPath().isPresent() ?
+                extension.getBootstrapJarPath().get() :
+                project.getLayout().getBuildDirectory().file("libs/strata-bootstrap.jar").get().getAsFile().getAbsolutePath();
+
         Strata strata = new Strata(cacheDir, sourceDir);
 
         // Register tasks
@@ -87,6 +91,7 @@ public class StrataGradlePlugin implements Plugin<Project> {
         project.getTasks().register("createBootstrapServerJar", CreateBoostrapServerJarTask.class, task -> {
             task.getStrataProperty().set(strata);
             task.getMinecraftVersionProperty().set(extension.getMinecraftVersion());
+            task.getBootstrapJarPathProperty().set(bootstrapJarPath.get());
         });
 
         // Add Minecraft libraries repository

@@ -5,11 +5,11 @@ public class Main {
     static void main() {
         System.out.println("hello world");
 
-        // TODO fetch mcVersion from "META-INF/version.txt"
+        // TODO fetch mcVersion from "version.txt"
 
-        // TODO download server jar and dependencies from Mojang API
+        // TODO download server jar and dependencies from Mojang API (skip if already downloaded)
 
-        // TODO patch server jar (patch is at "META-INF/server-<version>.patch")
+        // TODO patch server jar (patch is at "server-<version>.patch") (skip if already downloaded)
 
         // TODO load patched server jar to own classloader and run Minecraft main
     }

@@ -19,7 +19,7 @@ public class CreateServerJarPatchTask extends DefaultTask {
     private final Property<String> patchedJarPathProperty = getProject().getObjects().property(String.class);
 
     public CreateServerJarPatchTask() {
-        setGroup("strata");
+        setGroup("strata internal");
         setDescription("Creates a bsdiff patch of the patched Minecraft server jar");
         dependsOn("initStrata", "jar");
     }
