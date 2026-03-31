@@ -9,7 +9,7 @@ public class Main {
     /**
      * For mc-diff
      */
-    public static void main(String[] args) {
+    static void main(String[] args) {
         String gitDir = "mc-diff/src";
         Strata strata = new Strata(() -> "mc-diff/strata-cache", () -> gitDir);
         strata.init();
@@ -18,7 +18,7 @@ public class Main {
         // strata.getWorkspaceService().initGitDirectory("mc-diff");
 
         // Fetch version
-        String version = "26.1";
+        String version = "26.1.1-rc-1";
 
         PistonVersionDetails ver = strata.getMojangService().getVersion(version);
         strata.getMojangService().downloadServerBundle(ver);
