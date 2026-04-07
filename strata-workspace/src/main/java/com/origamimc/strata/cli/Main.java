@@ -18,7 +18,7 @@ public class Main {
         // strata.getWorkspaceService().initGitDirectory("mc-diff");
 
         // Fetch version
-        String version = "26.1.1";
+        String version = "26.2-snapshot-1";
 
         PistonVersionDetails ver = strata.getMojangService().getVersion(version);
         strata.getMojangService().downloadServerBundle(ver);
