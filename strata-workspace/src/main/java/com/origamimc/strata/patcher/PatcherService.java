@@ -340,19 +340,20 @@ public class PatcherService {
         }
     }
 
-    public void patchJar(String originalFilePath, String patchedFilePath, String patchPath) {
+    public void patchJar(String originalFilePath, String patchedFilePath, byte[] patchBytes) {
         try {
             byte[] originalBytes = Files.readAllBytes(Path.of(originalFilePath));
-            byte[] patchBytes = Files.readAllBytes(Path.of(patchPath));
+            //byte[] patchBytes = Files.readAllBytes(Path.of(patchPath));
             OutputStream patchedOutputstream = Files.newOutputStream(Path.of(patchedFilePath));
             Patch.patch(originalBytes, patchBytes, patchedOutputstream);
         } catch (IOException | CompressorException | InvalidHeaderException e) {
+            e.printStackTrace();
             strata.getLogger().error(
                     "Failed to patch jar",
                     ThrowableProperty.of(e),
                     StringProperty.of("originalFilePath", originalFilePath),
-                    StringProperty.of("patchedFilePath", patchedFilePath),
-                    StringProperty.of("patchPath", patchPath)
+                    StringProperty.of("patchedFilePath", patchedFilePath)
+                    //StringProperty.of("patchPath", patchPath)
             );
         }
     }

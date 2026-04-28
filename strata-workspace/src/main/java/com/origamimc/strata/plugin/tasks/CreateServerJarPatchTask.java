@@ -21,7 +21,7 @@ public class CreateServerJarPatchTask extends DefaultTask {
     public CreateServerJarPatchTask() {
         setGroup("strata internal");
         setDescription("Creates a bsdiff patch of the patched Minecraft server jar");
-        dependsOn("initStrata", "jar");
+        dependsOn("initStrata", "shadowJar");
     }
 
     @TaskAction
